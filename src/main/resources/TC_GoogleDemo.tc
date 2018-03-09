@@ -1,5 +1,0 @@
-open    http://www.google.com
-maxwin
-click   #lst-ib
-input   Selenium
-click   @btnK

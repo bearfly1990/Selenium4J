@@ -1,4 +1,4 @@
-package org.bearfly.selenium.models
+package org.bearfly.selenium.models;
 
 import org.bearfly.selenium.tools.SeleniumUtils;
 

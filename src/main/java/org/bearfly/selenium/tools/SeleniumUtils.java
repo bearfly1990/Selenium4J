@@ -10,7 +10,8 @@ public class SeleniumUtils {
     private String url = "http://www.google.com";
     private static WebElement curElement;
     static {
-        System.setProperty("webdriver.gecko.driver", "C:\\Program Files (x86)\\Mozilla Firefox\\geckodriver.exe");
+		System.setProperty("webdriver.gecko.driver", "D:\\Programs\\Mozilla Firefox\\geckodriver.exe");
+		System.setProperty("webdriver.firefox.bin", "D:\\Programs\\Mozilla Firefox\\firefox.exe");
         driver = new FirefoxDriver();
     }
 

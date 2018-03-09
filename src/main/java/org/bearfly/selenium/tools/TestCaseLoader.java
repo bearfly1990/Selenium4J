@@ -4,11 +4,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 
 import org.bearfly.selenium.models.TestCase;
 import org.bearfly.selenium.models.TestStep;
 import org.bearfly.selenium.models.TestStep.Operation;
+
+import com.sun.corba.se.spi.orbutil.fsm.Input;
 
 public class TestCaseLoader {
 
@@ -16,14 +20,15 @@ public class TestCaseLoader {
     private static final List<TestCase> testCases;
     static {
         testCases = XMLUtils.getListByXPath(testCaseConfig, "//testcase", TestCase.class);
-
         for (TestCase tc : testCases) {
             try {
-                ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-                File testStepsFile = new File(classLoader.getResource(tc.getFile()).getFile());
+            	System.out.println(tc.getFile());
+            	System.out.println(ClassLoader.getSystemClassLoader().getResource(tc.getFile()));
+            	System.out.println(ClassLoader.getSystemClassLoader().getResource(tc.getFile()).getFile());
+                File testStepsFile = new File(ClassLoader.getSystemClassLoader().getResource(tc.getFile()).getFile());
                 BufferedReader br = new BufferedReader(new FileReader(testStepsFile));
                 String readLine = "";
-                while ((readLine = br.readLine()) != null) {
+                while ((readLine = br.readLine()) != null && !readLine.trim().equals("")) {
                     tc.getTestSteps().add(createTestStep(readLine));
                 }
                 br.close();
