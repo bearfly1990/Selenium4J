@@ -12,8 +12,6 @@ import org.bearfly.selenium.models.TestCase;
 import org.bearfly.selenium.models.TestStep;
 import org.bearfly.selenium.models.TestStep.Operation;
 
-import com.sun.corba.se.spi.orbutil.fsm.Input;
-
 public class TestCaseLoader {
 
     private static final String testCaseConfig = "/TestCases.xml";
@@ -22,11 +20,11 @@ public class TestCaseLoader {
         testCases = XMLUtils.getListByXPath(testCaseConfig, "//testcase", TestCase.class);
         for (TestCase tc : testCases) {
             try {
-            	System.out.println(tc.getFile());
-            	System.out.println(ClassLoader.getSystemClassLoader().getResource(tc.getFile()));
-            	System.out.println(ClassLoader.getSystemClassLoader().getResource(tc.getFile()).getFile());
-                File testStepsFile = new File(ClassLoader.getSystemClassLoader().getResource(tc.getFile()).getFile());
-                BufferedReader br = new BufferedReader(new FileReader(testStepsFile));
+            	InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(tc.getFile());
+                BufferedReader br=new BufferedReader(new InputStreamReader(is));  
+            	
+                //File testStepsFile = new File(ClassLoader.getSystemClassLoader().getResource(tc.getFile()).getFile());
+                //BufferedReader br = new BufferedReader(new FileReader(testStepsFile));
                 String readLine = "";
                 while ((readLine = br.readLine()) != null && !readLine.trim().equals("")) {
                     tc.getTestSteps().add(createTestStep(readLine));
