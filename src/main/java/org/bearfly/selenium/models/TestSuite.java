@@ -1,8 +1,8 @@
-package org.bearfly.selenium.tools;
+package org.bearfly.selenium.models;
 
 import java.util.List;
 
-import org.bearfly.selenium.models.TestCase;
+import org.bearfly.selenium.tools.TestCaseLoader;
 
 public class TestSuite {
     public static void main(String[] args) {
