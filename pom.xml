@@ -31,7 +31,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>org.bearfly.selenium.tools.TestSuite</mainClass>
+							<mainClass>org.bearfly.selenium.App</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>

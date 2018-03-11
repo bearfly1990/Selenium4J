@@ -1,7 +1,6 @@
 package org.bearfly.selenium.tools;
 
-import java.io.IOException;
-import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -13,16 +12,12 @@ public class SeleniumUtils {
 	private static String url = "http://www.google.com";
 	private static WebElement curElement;
 	static {
-		try {
-			Properties props = new Properties();
-			props.load(ClassLoader.getSystemClassLoader().getResourceAsStream("Application.properties"));
-			System.setProperty("webdriver.gecko.driver", props.getProperty("webdriver.gecko.driver"));
-			System.setProperty("webdriver.firefox.bin", props.getProperty("webdriver.firefox.bin"));
-			driver = new FirefoxDriver();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+		// System.setProperty("webdriver.gecko.driver",
+		// AppConfiguration.getProperty("webdriver.gecko.driver"));
+		// System.setProperty("webdriver.firefox.bin",
+		// AppConfiguration.getProperty("webdriver.firefox.bin"));
+		driver = new FirefoxDriver();
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 	}
 
 	public static void openBrowser() {
@@ -47,6 +42,15 @@ public class SeleniumUtils {
 		return curElement;
 	}
 
+	public static WebElement findElementByLinkText(String linkText) {
+		curElement = driver.findElement(By.linkText(linkText));
+		return curElement;
+	}
+	
+	public static WebElement findElementByXPath(String xpath) {
+		driver.findElement(By.xpath(xpath));
+		return curElement;
+	}
 	public static void clickByID(String id) {
 		findElementByID(id).click();
 	}
@@ -59,6 +63,25 @@ public class SeleniumUtils {
 
 	public static void clickByName(String name) {
 		findElementByName(name).click();
+	}
+
+	public static void inputValue(String target, String content) {
+		findElementByString(target).sendKeys(content);
+	}
+
+	public static WebElement findElementByString(String str) {
+		switch (str.charAt(0)) {
+		case '#':
+			curElement = SeleniumUtils.findElementByID(str.substring(1));
+			break;
+		case '@':
+			curElement = SeleniumUtils.findElementByName(str.substring(1));
+			break;
+		case '&':
+			curElement = SeleniumUtils.findElementByLinkText(str.substring(1));
+		}
+
+		return curElement;
 	}
 
 }

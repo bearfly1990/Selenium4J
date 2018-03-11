@@ -1,6 +1,7 @@
-open    http://www.baidu.com
+open	http://www.baidu.com
 maxwin
-click   #kw
-input   Selenium
-click   #su
-
+click	#kw
+input	#kw   Selenium
+input	3
+click	#su
+click   &Selenium - Web Browser Automation

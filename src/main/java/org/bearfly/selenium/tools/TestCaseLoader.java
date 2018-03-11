@@ -1,8 +1,6 @@
 package org.bearfly.selenium.tools;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,65 +12,78 @@ import org.bearfly.selenium.models.TestStep.Operation;
 
 public class TestCaseLoader {
 
-    private static final String testCaseConfig = "/TestCases.xml";
-    private static final List<TestCase> testCases;
-    static {
-        testCases = XMLUtils.getListByXPath(testCaseConfig, "//testcase", TestCase.class);
-        for (TestCase tc : testCases) {
-            try {
-            	InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(tc.getFile());
-                BufferedReader br=new BufferedReader(new InputStreamReader(is));  
-            	
-                //File testStepsFile = new File(ClassLoader.getSystemClassLoader().getResource(tc.getFile()).getFile());
-                //BufferedReader br = new BufferedReader(new FileReader(testStepsFile));
-                String readLine = "";
-                while ((readLine = br.readLine()) != null && !readLine.trim().equals("")) {
-                    tc.getTestSteps().add(createTestStep(readLine));
-                }
-                br.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+	private static final String FILE_TC_CONFIG = "/TestCases.xml";
+	private static final String NAME_TC_NODE = "//testcase";
+	private static List<TestCase> testCases;
+	static {
+		loadTestCases();
+	}
 
-    }
+	private static void loadTestCases() {
+		testCases = XMLUtils.getListByXPath(FILE_TC_CONFIG, NAME_TC_NODE, TestCase.class);
+		for (TestCase tc : testCases) {
+			try {
+				InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(tc.getFile());
+				BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
-    private static TestStep createTestStep(String stepStr) {
-        TestStep tStep = new TestStep();
-        String[] stepArray = stepStr.trim().split(" +");
-        String operation = stepArray[0];
-        String target = "";
-        if (stepArray.length > 1) {
-            target = stepArray[1];
-        }
+				// File testStepsFile = new
+				// File(ClassLoader.getSystemClassLoader().getResource(tc.getFile()).getFile());
+				// BufferedReader br = new BufferedReader(new FileReader(testStepsFile));
+				String readLine = "";
+				while ((readLine = br.readLine()) != null && !readLine.trim().equals("")) {
+					TestStep newStep = loadTestSteps(readLine);
+					List<TestStep> tStepList = tc.getTestSteps();
+					tc.getTestSteps().add(newStep);
+					TestStep lastStep = tStepList.get(tStepList.size() - 1);
+					newStep.setLastStep(lastStep);
+					lastStep.setNextStep(newStep);
+				}
+				br.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
-        switch (operation.toLowerCase()) {
-        case "open":
-            tStep.setOper(Operation.OPEN);
-            break;
-        case "click":
-            tStep.setOper(Operation.CLICK);
-            break;
-        case "maxwin":
-            tStep.setOper(Operation.MAXWIN);
-            break;
-        case "input":
-            tStep.setOper(Operation.INPUT);
-            break;
-        default:
-            break;
-        }
-        tStep.setTarget(target);
-        return tStep;
-    }
+	private static TestStep loadTestSteps(String stepStr) {
+		TestStep tStep = new TestStep();
+		String[] stepArray = stepStr.trim().split("\\s{2,}|\\t");
+		String operation = stepArray[0];
+		String target = null;
+		String content = null;
+		if (stepArray.length == 2) {
+			target = stepArray[1];
+			content = stepArray[1];
+		} else if (stepArray.length == 3) {
+			target = stepArray[1];
+			content = stepArray[2];
+		}
+		tStep.setTarget(target);
+		tStep.setContent(content);
+		switch (operation.toLowerCase()) {
+		case "open":
+			tStep.setOper(Operation.OPEN);
+			break;
+		case "click":
+			tStep.setOper(Operation.CLICK);
+			break;
+		case "maxwin":
+			tStep.setOper(Operation.MAXWIN);
+			break;
+		case "input":
+			tStep.setOper(Operation.INPUT);
+			if(stepArray.length == 2) {
+				tStep.setTarget(null);
+			}
+			break;
+		default:
+			break;
+		}
+		return tStep;
+	}
 
-    public static String getTestcaseconfig() {
-        return testCaseConfig;
-    }
-
-    public static List<TestCase> getTestcases() {
-        return testCases;
-    }
-
+	public static List<TestCase> getTestcases() {
+		return testCases;
+	}
 
 }
